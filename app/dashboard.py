@@ -738,112 +738,269 @@ elif "Zone Analytics" in page:
 
     section_header("📊", "Zone-wise Performance")
 
-    tabs = st.tabs(["📈  Visit Share", "⏱️  Dwell Analysis", "🥇  Zone Cards", "📉  Event Breakdown"])
+    tabs = st.tabs([
+        "📈 Visit Share",
+        "⏱️ Dwell Analysis",
+        "🥇 Zone Cards",
+        "📉 Event Breakdown"
+    ])
 
-    # Tab 1 — Visit Share
+    # =====================================================
+    # TAB 1 : VISIT SHARE
+    # =====================================================
     with tabs[0]:
-        col1, col2 = st.columns([1, 1], gap="large")
+
+        col1, col2 = st.columns([1, 1])
+
+        zone_counts = (
+            df_f["zone"]
+            .value_counts()
+            .reset_index()
+        )
+
+        zone_counts.columns = [
+            "zone",
+            "count"
+        ]
+
         with col1:
-            zone_counts = df_f["zone"].value_counts().reset_index()
-            zone_counts.columns = ["zone", "count"]
+
             fig = px.pie(
-                zone_counts, values="count", names="zone",
-                color_discrete_sequence=ZONE_COLORS,
+                zone_counts,
+                values="count",
+                names="zone",
                 hole=0.55,
+                color="zone",
+                color_discrete_sequence=ZONE_COLORS
             )
-            fig.update_traces(textinfo="percent+label", textfont_size=12,
-                              textfont_color="#ffffff",
-                              marker=dict(line=dict(color="#1a0533", width=2)))
-            fig.update_layout(**PLOTLY_LAYOUT, height=380,
-                              annotations=[dict(text=f"<b>{total_visitors}</b><br>visitors",
-                                                x=0.5, y=0.5, font_size=16,
-                                                font_color="#d4aaff", showarrow=False)])
-            st.plotly_chart(fig, use_container_width=True)
+
+            fig.update_traces(
+                textinfo="percent+label",
+                textfont_size=12,
+                marker=dict(
+                    line=dict(
+                        color="#1a0533",
+                        width=2
+                    )
+                )
+            )
+
+            fig.update_layout(
+                height=420,
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="white"),
+                annotations=[
+                    dict(
+                        text=f"<b>{total_visitors}</b><br>Visitors",
+                        x=0.5,
+                        y=0.5,
+                        showarrow=False,
+                        font=dict(
+                            size=18,
+                            color="#d4aaff"
+                        )
+                    )
+                ]
+            )
+
+            st.plotly_chart(
+                fig,
+                use_container_width=True
+            )
 
         with col2:
-            st.markdown("<br>", unsafe_allow_html=True)
-            section_header("📊", "Visit Share by Zone")
-            max_v = zone_counts["count"].max()
-            for _, row in zone_counts.iterrows():
-                pct = row["count"] / zone_counts["count"].sum()
-                st.markdown(f"""
-                <div style="display:flex;justify-content:space-between;align-items:center;
-                            margin-bottom:0.3rem;">
-                    <span style="color:#d4aaff;font-size:0.82rem;font-weight:600;">
-                        {row['zone']}</span>
-                    <span style="color:#fff;font-size:0.82rem;">{row['count']} &nbsp;
-                        <span style="color:#9b59f5;">{pct:.0%}</span></span>
-                </div>""", unsafe_allow_html=True)
-                st.progress(int(pct * 100))
 
-    # Tab 2 — Dwell Analysis
-    with tabs[1]:
-        dwell_box = df_f[["zone", "dwell_seconds"]].dropna()
-        fig = px.box(
-            dwell_box, x="zone", y="dwell_seconds",
-            color="zone", color_discrete_sequence=ZONE_COLORS,
-            points="outliers",
-        )
-        fig.update_layout(**PLOTLY_LAYOUT, height=380,
-                          showlegend=False,
-                          yaxis=dict(**PLOTLY_LAYOUT["yaxis"], title="Dwell (seconds)"))
-        st.plotly_chart(fig, use_container_width=True)
-
-        st.markdown("**Dwell statistics per zone**")
-        dwell_stats = df_f.groupby("zone")["dwell_seconds"].agg(
-            Mean="mean", Median="median", Max="max", Min="min", Std="std"
-        ).round(1)
-        st.dataframe(
-            dwell_stats.style.background_gradient(cmap="Purples", axis=None),
-            use_container_width=True,
-        )
-
-    # Tab 3 — Zone Cards
-    with tabs[2]:
-        cols = st.columns(3)
-        for i, zone in enumerate(df_f["zone"].unique()):
-            zdf   = df_f[df_f["zone"] == zone]
-            visits = len(zdf)
-            unique = zdf["visitor_id"].nunique()
-            dwell  = zdf["dwell_seconds"].mean() if "dwell_seconds" in zdf.columns else 0
-            share  = visits / len(df_f) * 100 if len(df_f) else 0
-            color  = ZONE_COLORS[i % len(ZONE_COLORS)]
-            with cols[i % 3]:
-                st.markdown(f"""
-                <div class="zone-card" style="border-top:3px solid {color};">
-                    <div class="zone-card-title">{zone}</div>
-                    <div class="zone-stat-row">
-                        <span class="zone-stat-label">Total visits</span>
-                        <span class="zone-stat-value">{visits:,}</span>
-                    </div>
-                    <div class="zone-stat-row">
-                        <span class="zone-stat-label">Unique visitors</span>
-                        <span class="zone-stat-value">{unique:,}</span>
-                    </div>
-                    <div class="zone-stat-row">
-                        <span class="zone-stat-label">Avg dwell</span>
-                        <span class="zone-stat-value">{dwell:.0f}s</span>
-                    </div>
-                    <div class="zone-stat-row">
-                        <span class="zone-stat-label">Traffic share</span>
-                        <span class="zone-stat-value" style="color:{color};">{share:.1f}%</span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-    # Tab 4 — Event Breakdown
-    with tabs[3]:
-        if "event_type" in df_f.columns:
-            evt_zone = df_f.groupby(["zone","event_type"]).size().reset_index(name="count")
-            fig = px.bar(
-                evt_zone, x="zone", y="count", color="event_type",
-                barmode="group", color_discrete_sequence=ZONE_COLORS,
+            section_header(
+                "📊",
+                "Visit Share by Zone"
             )
-            fig.update_layout(**PLOTLY_LAYOUT, height=360,
-                              legend_title_text="Event Type")
-            st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.info("No `event_type` column found in data.")
+
+            total = zone_counts["count"].sum()
+
+            for _, row in zone_counts.iterrows():
+
+                pct = (
+                    row["count"] / total
+                ) * 100
+
+                st.markdown(
+                    f"""
+                    **{row['zone']}**
+                    """
+                )
+
+                st.progress(
+                    int(pct)
+                )
+
+                st.caption(
+                    f"{row['count']} visits ({pct:.1f}%)"
+                )
+
+    # =====================================================
+    # TAB 2 : DWELL ANALYSIS
+    # =====================================================
+    with tabs[1]:
+
+        dwell_box = df_f[
+            ["zone", "dwell_seconds"]
+        ].dropna()
+
+        fig = px.box(
+            dwell_box,
+            x="zone",
+            y="dwell_seconds",
+            color="zone",
+            points="outliers",
+            color_discrete_sequence=ZONE_COLORS
+        )
+
+        fig.update_layout(
+            height=420,
+            showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="white")
+        )
+
+        fig.update_yaxes(
+            title="Dwell Time (Seconds)"
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
+
+        st.markdown(
+            "### Dwell Statistics"
+        )
+
+        dwell_stats = (
+            df_f.groupby("zone")
+            ["dwell_seconds"]
+            .agg(
+                Mean="mean",
+                Median="median",
+                Max="max",
+                Min="min"
+            )
+            .round(2)
+        )
+
+        st.dataframe(
+            dwell_stats,
+            use_container_width=True
+        )
+
+    # =====================================================
+    # TAB 3 : ZONE CARDS
+    # =====================================================
+    with tabs[2]:
+
+        cols = st.columns(3)
+
+        zones_list = (
+            df_f["zone"]
+            .dropna()
+            .unique()
+        )
+
+        for i, zone in enumerate(zones_list):
+
+            zdf = df_f[
+                df_f["zone"] == zone
+            ]
+
+            visits = len(zdf)
+
+            unique_visitors = (
+                zdf["visitor_id"]
+                .nunique()
+            )
+
+            avg_dwell = (
+                zdf["dwell_seconds"]
+                .mean()
+                if "dwell_seconds" in zdf.columns
+                else 0
+            )
+
+            share = (
+                visits /
+                len(df_f)
+            ) * 100
+
+            with cols[i % 3]:
+
+                st.markdown(
+                    f"""
+                    <div class="zone-card">
+                        <div class="zone-card-title">
+                            {zone}
+                        </div>
+
+                        <div class="zone-stat-row">
+                            <span>Total Visits</span>
+                            <span>{visits}</span>
+                        </div>
+
+                        <div class="zone-stat-row">
+                            <span>Visitors</span>
+                            <span>{unique_visitors}</span>
+                        </div>
+
+                        <div class="zone-stat-row">
+                            <span>Avg Dwell</span>
+                            <span>{avg_dwell:.1f}s</span>
+                        </div>
+
+                        <div class="zone-stat-row">
+                            <span>Traffic Share</span>
+                            <span>{share:.1f}%</span>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+    # =====================================================
+    # TAB 4 : EVENT BREAKDOWN
+    # =====================================================
+    with tabs[3]:
+
+        zone_events = (
+            df_f.groupby("zone")
+            .size()
+            .reset_index(name="count")
+        )
+
+        fig = px.bar(
+            zone_events,
+            x="zone",
+            y="count",
+            color="zone",
+            text="count",
+            color_discrete_sequence=ZONE_COLORS
+        )
+
+        fig.update_traces(
+            textposition="outside"
+        )
+
+        fig.update_layout(
+            height=420,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="white"),
+            showlegend=False
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
 # ─────────────────────────────────────────────
 #  ════════════  PAGE: HEATMAP  ════════════
