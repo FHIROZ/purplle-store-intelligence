@@ -1,0 +1,112 @@
+{
+    "visitor_1_SWISS_BEAUTY": {
+        "visitor_id": 1,
+        "zone": "SWISS_BEAUTY",
+        "dwell_seconds": 0.43
+    },
+    "visitor_3_SWISS_BEAUTY": {
+        "visitor_id": 3,
+        "zone": "SWISS_BEAUTY",
+        "dwell_seconds": 0.2
+    },
+    "visitor_4_SWISS_BEAUTY": {
+        "visitor_id": 4,
+        "zone": "SWISS_BEAUTY",
+        "dwell_seconds": 2.54
+    },
+    "visitor_5_SWISS_BEAUTY": {
+        "visitor_id": 5,
+        "zone": "SWISS_BEAUTY",
+        "dwell_seconds": 6.27
+    },
+    "visitor_12_ALPS": {
+        "visitor_id": 12,
+        "zone": "ALPS",
+        "dwell_seconds": 0.23
+    },
+    "visitor_18_SWISS_BEAUTY": {
+        "visitor_id": 18,
+        "zone": "SWISS_BEAUTY",
+        "dwell_seconds": 0.2
+    },
+    "visitor_16_ALPS": {
+        "visitor_id": 16,
+        "zone": "ALPS",
+        "dwell_seconds": 2.8
+    },
+    "visitor_21_ALPS": {
+        "visitor_id": 21,
+        "zone": "ALPS",
+        "dwell_seconds": 0.07
+    },
+    "visitor_22_ALPS": {
+        "visitor_id": 22,
+        "zone": "ALPS",
+        "dwell_seconds": 0.07
+    },
+    "visitor_23_ALPS": {
+        "visitor_id": 23,
+        "zone": "ALPS",
+        "dwell_seconds": 0.03
+    },
+    "visitor_24_LAKME": {
+        "visitor_id": 24,
+        "zone": "LAKME",
+        "dwell_seconds": 1.17
+    },
+    "visitor_24_FACES_CANADA": {
+        "visitor_id": 24,
+        "zone": "FACES_CANADA",
+        "dwell_seconds": 4.37
+    },
+    "visitor_2_ALPS": {
+        "visitor_id": 2,
+        "zone": "ALPS",
+        "dwell_seconds": 2.1
+    },
+    "visitor_4_LAKME": {
+        "visitor_id": 4,
+        "zone": "LAKME",
+        "dwell_seconds": 0.33
+    },
+    "visitor_35_FACES_CANADA": {
+        "visitor_id": 35,
+        "zone": "FACES_CANADA",
+        "dwell_seconds": 0.4
+    },
+    "visitor_36_LAKME": {
+        "visitor_id": 36,
+        "zone": "LAKME",
+        "dwell_seconds": 0.1
+    },
+    "visitor_36_FACES_CANADA": {
+        "visitor_id": 36,
+        "zone": "FACES_CANADA",
+        "dwell_seconds": 1.5
+    },
+    "visitor_4_FACES_CANADA": {
+        "visitor_id": 4,
+        "zone": "FACES_CANADA",
+        "dwell_seconds": 2.57
+    },
+    "visitor_45_FACES_CANADA": {
+        "visitor_id": 45,
+        "zone": "FACES_CANADA",
+        "dwell_seconds": 0.07
+    },
+    "visitor_50_ALPS": {
+        "visitor_id": 50,
+        "zone": "ALPS",
+        "dwell_seconds": 0.03
+    },
+    "visitor_52_FACES_CANADA": {
+        "visitor_id": 52,
+        "zone": "FACES_CANADA",
+        "dwell_seconds": 0.37
+    },
+    "visitor_5_LAKME": {
+        "visitor_id": 5,
+        "zone": "LAKME",
+        "dwell_seconds": 0.13
+    }
+}

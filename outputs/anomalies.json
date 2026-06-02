@@ -1,0 +1,9 @@
+[
+    {
+        "visitor_id": 5,
+        "zone": "SWISS_BEAUTY",
+        "event_type": "ANOMALY",
+        "reason": "High Dwell Time",
+        "dwell_seconds": 6.27
+    }
+]
